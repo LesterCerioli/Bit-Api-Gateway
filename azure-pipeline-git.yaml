@@ -1,0 +1,116 @@
+trigger:
+  branches:
+    include:
+      - dev/2  
+
+pool:
+  name: 'vts001'
+
+jobs:
+- job: SyncToGitHub
+  displayName: 'Sync Azure DevOps dev/2 to GitHub (New Issue Branch)'
+  steps:
+
+  - checkout: self  
+
+  - script: |
+      set -e  # Stop script if any command fails
+
+      echo "Configuring Git..."
+      git config --global user.email "lesterlucasit@hotmail.com"
+      git config --global user.name "LesterCerioli"
+
+      echo "Resetting repository state..."
+      git reset --hard HEAD
+      git clean -fd
+      git gc --prune=now  # Clean up corrupted objects
+
+      echo "Configuring authentication for Azure DevOps..."
+      git remote set-url origin https://$(AZURE_DEVOPS_PAT)@dev.azure.com/lesterlucasit/Medical-SAS/_git/Medical-SAS-BackEnd
+
+      echo "Adding GitHub as a remote repository..."
+      if git remote | grep -q "github-origin"; then
+        git remote remove github-origin
+      fi
+      git remote add github-origin https://$(GITHUB_PAT)@github.com/LesterCerioli/Medical-App-Golang.git
+
+      echo "Fetching all branches from Azure DevOps and GitHub..."
+      git fetch origin --prune
+      git fetch github-origin --prune
+      git fetch --unshallow || echo "Repository is already complete."
+
+      echo "Ensuring dev/2 branch exists locally..."
+      if git show-ref --verify --quiet refs/heads/dev/2; then
+        git checkout dev/2
+      else
+        git checkout -b dev/2 origin/dev/2
+      fi
+      
+      RANDOM_NUMBER=$RANDOM
+      ISSUE_BRANCH="issue/$RANDOM_NUMBER"
+
+      echo "Creating a new branch for GitHub sync: $ISSUE_BRANCH..."
+      git checkout -b $ISSUE_BRANCH
+      
+      if [[ -n $(git status --porcelain) ]]; then
+        echo "Staging and committing all changes..."
+        git add .
+        git commit -m "Sync from Azure DevOps to GitHub issue branch"
+      else
+        echo "No changes to commit. Skipping commit step."
+      fi
+
+      echo "Verifying repository integrity..."
+      git fsck --full --strict || echo "Repository integrity check failed, attempting fix..."
+      git repack -a -d --depth=250 --window=250
+      git gc --prune=now
+
+      echo "Force pushing changes to GitHub..."
+      if ! git push --force github-origin $ISSUE_BRANCH; then
+        echo "⚠️ Force push failed, retrying with additional repack..."
+        git repack -a -d
+        git gc --prune=now
+        git push --force github-origin $ISSUE_BRANCH || echo "⚠️ Force push failed, but pipeline will proceed."
+      fi
+
+    displayName: 'Force Push Azure DevOps dev/2 to GitHub as issue branch'
+    env:
+      GITHUB_PAT: $(GITHUB_PAT)
+      AZURE_DEVOPS_PAT: $(AZURE_DEVOPS_PAT)
+
+  - script: |
+      echo "Creating a pull request on GitHub for branch $ISSUE_BRANCH..."
+      curl -X POST -H "Authorization: token $(GITHUB_PAT)" \
+      -H "Accept: application/vnd.github.v3+json" \
+      https://api.github.com/repos/LesterCerioli/Medical-App-Golang.git/pulls \
+      -d "{
+        \"title\": \"Sync Azure DevOps dev/2 to GitHub ($ISSUE_BRANCH)\",
+        \"body\": \"Automated PR to sync dev/2 branch from Azure DevOps to new branch $ISSUE_BRANCH in GitHub.\",
+        \"head\": \"$ISSUE_BRANCH\",
+        \"base\": \"dev/2\"
+      }"
+    displayName: 'Create Pull Request on GitHub'
+    env:
+      GITHUB_PAT: $(GITHUB_PAT)
+
+  - script: |
+      echo "Requesting review for Pull Request on GitHub..."
+      PR_NUMBER=$(curl -s -H "Authorization: token $(GITHUB_PAT)" \
+        -H "Accept: application/vnd.github.v3+json" \
+        https://api.github.com/repos/LesterCerioli/Medical-App-Golang.git/pulls?head=LesterCerioli:$ISSUE_BRANCH | jq -r '.[0].number')
+      
+      if [ "$PR_NUMBER" != "null" ]; then
+        curl -X POST -H "Authorization: token $(GITHUB_PAT)" \
+        -H "Accept: application/vnd.github.v3+json" \
+        https://api.github.com/repos/LesterCerioli/Medical-App-Golang.git/pulls/$PR_NUMBER/requested_reviewers \
+        -d "{
+          \"reviewers\": [\"LesterCerioli\"]
+        }"
+        echo "Review request submitted for PR #$PR_NUMBER."
+      else
+        echo "No PR found to request review."
+      fi
+    displayName: 'Request Review for Pull Request on GitHub'
+    env:
+      GITHUB_PAT: $(GITHUB_PAT)
+
