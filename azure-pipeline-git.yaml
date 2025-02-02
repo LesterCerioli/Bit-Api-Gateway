@@ -4,7 +4,7 @@ trigger:
       - dev/2  
 
 pool:
-  name: 'vts001'
+  vmImage: 'ubuntu-latest'
 
 jobs:
 - job: SyncToGitHub
@@ -26,13 +26,13 @@ jobs:
       git gc --prune=now  # Clean up corrupted objects
 
       echo "Configuring authentication for Azure DevOps..."
-      git remote set-url origin https://$(AZURE_DEVOPS_PAT)@dev.azure.com/lesterlucasit/Medical-SAS/_git/Medical-SAS-BackEnd
+      git remote set-url origin https://$(AZURE_DEVOPS_PAT)@dev.azure.com/lesterlucasit/Bit-Api-Gateway/_git/Bit-Api-Gateway
 
       echo "Adding GitHub as a remote repository..."
       if git remote | grep -q "github-origin"; then
         git remote remove github-origin
       fi
-      git remote add github-origin https://$(GITHUB_PAT)@github.com/LesterCerioli/Medical-App-Golang.git
+      git remote add github-origin https://$(GITHUB_PAT)@github.com/LesterCerioli/Bit-Api-Gateway.git
 
       echo "Fetching all branches from Azure DevOps and GitHub..."
       git fetch origin --prune
@@ -82,7 +82,7 @@ jobs:
       echo "Creating a pull request on GitHub for branch $ISSUE_BRANCH..."
       curl -X POST -H "Authorization: token $(GITHUB_PAT)" \
       -H "Accept: application/vnd.github.v3+json" \
-      https://api.github.com/repos/LesterCerioli/Medical-App-Golang.git/pulls \
+      https://api.github.com/repos/LesterCerioli/Bit-Api-Gateway.git/pulls \
       -d "{
         \"title\": \"Sync Azure DevOps dev/2 to GitHub ($ISSUE_BRANCH)\",
         \"body\": \"Automated PR to sync dev/2 branch from Azure DevOps to new branch $ISSUE_BRANCH in GitHub.\",
@@ -97,12 +97,12 @@ jobs:
       echo "Requesting review for Pull Request on GitHub..."
       PR_NUMBER=$(curl -s -H "Authorization: token $(GITHUB_PAT)" \
         -H "Accept: application/vnd.github.v3+json" \
-        https://api.github.com/repos/LesterCerioli/Medical-App-Golang.git/pulls?head=LesterCerioli:$ISSUE_BRANCH | jq -r '.[0].number')
+        https://api.github.com/repos/LesterCerioli/Bit-Api-Gateway.git/pulls?head=LesterCerioli:$ISSUE_BRANCH | jq -r '.[0].number')
       
       if [ "$PR_NUMBER" != "null" ]; then
         curl -X POST -H "Authorization: token $(GITHUB_PAT)" \
         -H "Accept: application/vnd.github.v3+json" \
-        https://api.github.com/repos/LesterCerioli/Medical-App-Golang.git/pulls/$PR_NUMBER/requested_reviewers \
+        https://api.github.com/repos/LesterCerioli/Bit-Api-Gateway.git/pulls/$PR_NUMBER/requested_reviewers \
         -d "{
           \"reviewers\": [\"LesterCerioli\"]
         }"
