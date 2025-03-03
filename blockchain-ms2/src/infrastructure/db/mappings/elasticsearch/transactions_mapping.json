@@ -1,0 +1,14 @@
+{
+    "mappings": {
+      "properties": {
+        "tx_id": { "type": "keyword" },
+        "sender": { "type": "keyword" },
+        "receiver": { "type": "keyword" },
+        "amount": { "type": "double" },
+        "currency": { "type": "keyword" },
+        "status": { "type": "keyword" },
+        "created_at": { "type": "date" },
+        "updated_at": { "type": "date" }
+      }
+    }
+}

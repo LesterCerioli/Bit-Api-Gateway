@@ -1,0 +1,46 @@
+# Ignore Python compiled files
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environment
+venv/
+.env
+*.venv
+Pipfile
+Pipfile.lock
+
+# Logs & Debugging
+logs/
+*.log
+*.out
+*.err
+debug.log
+
+# Database files
+*.sqlite3
+*.db
+
+# Environment Variables & Secrets
+.env
+*.pem
+*.crt
+*.key
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# MacOS & Windows Files
+.DS_Store
+Thumbs.db
+
+# IDE & Editor Configurations
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build & Distribution
+build/
+dist/
+*.egg-info/

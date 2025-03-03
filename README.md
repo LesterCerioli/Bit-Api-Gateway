@@ -1,24 +1,20 @@
-![image](https://github.com/user-attachments/assets/92aace85-e2c8-4d7a-bc18-91971d98c98f)
+# Introduction 
+TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
 
-![image](https://github.com/user-attachments/assets/fb8822cc-eab5-4092-a25d-c104cda6edb6)
+# Getting Started
+TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
+1.	Installation process
+2.	Software dependencies
+3.	Latest releases
+4.	API references
 
-![image](https://github.com/user-attachments/assets/d84e4774-7232-4f4d-a90f-9cd1e3f58f0e)
+# Build and Test
+TODO: Describe and show how to build your code and run the tests. 
 
-![image](https://github.com/user-attachments/assets/859f69bb-c15a-423b-9a19-34467748570c)
+# Contribute
+TODO: Explain how other users and developers can contribute to make your code better. 
 
-![image](https://github.com/user-attachments/assets/15c957d1-7860-441f-b76c-05822584c931)
-
-![image](https://github.com/user-attachments/assets/bb133569-05d4-4ccb-a01f-74468b8df253)
-
-![image](https://github.com/user-attachments/assets/88f09315-7e6d-44c4-af4f-ffe63dde23e2)
-
-![image](https://github.com/user-attachments/assets/1454c7bf-915e-4975-94bb-cfc39e98e1de)
-
-![image](https://github.com/user-attachments/assets/9958886d-b705-42e2-abba-916b5b418beb)
-
-![image](https://github.com/user-attachments/assets/d39e749f-b4c6-4df6-9082-00f654eb61cf)
-
-![image](https://github.com/user-attachments/assets/9798bd57-85cb-4d19-b3e9-3a7c702140f4)
-
-![image](https://github.com/user-attachments/assets/e937f706-84fa-4e8c-93ef-b1a8207808fe)
-
+If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
+- [ASP.NET Core](https://github.com/aspnet/Home)
+- [Visual Studio Code](https://github.com/Microsoft/vscode)
+- [Chakra Core](https://github.com/Microsoft/ChakraCore)
