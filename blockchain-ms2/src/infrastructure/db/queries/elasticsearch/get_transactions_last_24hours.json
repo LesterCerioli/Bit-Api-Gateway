@@ -1,0 +1,9 @@
+{
+    "query": {
+      "range": {
+        "created_at": {
+          "gte": "now-24h/h"
+        }
+      }
+    }
+  }

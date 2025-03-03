@@ -1,0 +1,11 @@
+{
+    "query": {
+      "bool": {
+        "should": [
+          { "match": { "sender": "user-123" }},
+          { "match": { "receiver": "user-123" }}
+        ]
+      }
+    }
+  }
+  
